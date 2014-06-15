@@ -1,19 +1,11 @@
 <?php
     define('DS',DIRECTORY_SEPARATOR);
-    /**
-     * @todo Add error handling
-     */
-
     include_once('components/Autoloader.php');
 
-    class App {
+    class App extends Singleton {
 
-        protected static $_inst;
         protected $_controller;
-
-        protected function __construct() {
-
-        }
+        protected $_router;
 
         public static function getRootPath() {
             return dirname(dirname(__FILE__));
@@ -25,13 +17,13 @@
 
         public static function inst() {
 
-            if(empty(self::$_inst)) {
-                self::$_inst = new App();
-                set_error_handler(array(self::$_inst,'errorHandler'),E_ALL & ~E_WARNING & ~E_NOTICE);
-                set_exception_handler(array(self::$_inst,'exceptionHandler'));
+            if(empty(static::$_inst)) {
+                static::$_inst = new App();
+                set_error_handler(array(static::$_inst,'errorHandler'),E_ALL & ~E_WARNING & ~E_NOTICE);
+                set_exception_handler(array(static::$_inst,'exceptionHandler'));
             }
 
-            return self::$_inst;
+            return static::$_inst;
         }
 
         public static function errorHandler( $errno , $errstr , $errfile = '' , $errline = 0, $errcontext = array() ) {
@@ -46,9 +38,24 @@
         }
 
         public function run() {
-            $this->_controller = new SiteController();
+            /**
+             * @todo Routing 
+             */
+            $this->_router = new Router();
 
-            $action = $_REQUEST['action'] ? : 'index';
+            $route = $this->_router->processRequest($_REQUEST);
+
+            list($controller, $action) = explode('/',$route);
+            $controllerName = ucfirst($controller).'Controller';
+            if(!class_exists($controllerName)) {
+                throw new Exception("Controller '{$controllerName}' not available");
+            }
+            if(!is_subclass_of($controllerName,'Controller')) {
+                throw new Exception("Controller '{$controllerName}' not extended from 'Controller' class");
+            }
+
+            $this->_controller = new $controllerName();
+
 
             $this->_controller->run($action);
         }

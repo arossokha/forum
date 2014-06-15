@@ -4,9 +4,8 @@
         protected static $_inst;
         protected $_pdo;
 
-        protected function __construct() {
-
-        }
+        protected function __construct() {}
+        protected function __clone() {}
 
         public static function inst() {
 
@@ -23,24 +22,35 @@
             $this->_pdo->exec('SET NAMES '.$this->_pdo->quote($config['charset'] ? : 'utf8'));
         }
 
-        public function queryAll($sql, $params) {
-            $st = $this->_pdo->query($sql);
+        protected function prepareStatement($sql, $params) {
+            $st = $this->_pdo->prepare($sql);
             
             /**
              * @todo normal error handling
              * @error when table have no rows we got $st = false
              */
-
             if(!$st && $this->_pdo->errorCode > 0) {
                 throw new Exception("PDO #{$this->_pdo->errorCode}: {$this->_pdo->errorInfo}");
             }
 
             if(!empty($params) && is_array($params)) {
                 foreach ($params as $key => $value) {
-                    $st->bindValue($key,$value);
+                    $r = $st->bindValue($key,$value);
                 }
             }
 
+            return $st;
+        }
+
+        public function queryOne($sql, $params) {
+            $st = $this->prepareStatement($sql,$params);
+            $st->execute();
+            return $st->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public function queryAll($sql, $params) {
+            $st = $this->prepareStatement($sql,$params);
+            $st->execute();
             return $st->fetchAll();
         }
     }

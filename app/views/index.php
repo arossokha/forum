@@ -11,8 +11,9 @@ if(count($data)) {
     echo "<tbody>";
         foreach($data as $theme) {
             echo "</tr>";
-            echo "<td>{$theme->themeId}</td>";
-            echo "<td>{$theme->name}</td>";
+            foreach ($data[0]->getAttributeNames() as $attribute => $name) {
+                echo '<td>'.$theme->{$attribute}.'</td>';
+            }
             echo "</tr>";
         }
     echo "</tbody>";

@@ -8,6 +8,9 @@
 
             $data = Theme::find();
 
+            // var_dump($data);
+            // die();
+
             $this->render('index',array(
                 'data' => $data
             ));

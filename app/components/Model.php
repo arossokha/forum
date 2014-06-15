@@ -21,22 +21,6 @@
             return $this->_attributes[$this->getPrimaryKeyName()];
         }
 
-        public static function find($condition = '',$params = array()) {
-            $modelName = get_called_class();
-            
-            $tableName = $modelName::getTableName();
-
-            $sql = 'SELECT * from '.$tableName.' '.$condition;
-
-            $data = Db::inst()->queryAll($sql,$params);
-
-            foreach ($data as $row) {
-                $models[] = new $modelName($row);
-            }
-
-            return $models;
-        }
-
         public function __get($name) {
             if(array_key_exists($name, $this->_attributes)) {
                 return $this->_attributes[$name];
@@ -61,6 +45,32 @@
 
         public function __construct($attributes = array()) {
             $this->setAttributes($attributes);
+        }
+
+        public static function findOne($condition = '',$params = array()) {
+            $modelName = get_called_class();
+            $tableName = $modelName::getTableName();
+
+            $sql = 'SELECT * from '.$tableName.' '.($condition ? 'WHERE '.$condition : '').' LIMIT 1';
+
+            $data = Db::inst()->queryOne($sql,$params);
+
+            return new $modelName($data);
+        }
+
+        public static function find($condition = '',$params = array()) {
+            $modelName = get_called_class();
+            $tableName = $modelName::getTableName();
+
+            $sql = 'SELECT * from '.$tableName.' '.($condition ? 'WHERE '.$condition : '');
+
+            $data = Db::inst()->queryAll($sql,$params);
+
+            foreach ($data as $row) {
+                $models[] = new $modelName($row);
+            }
+
+            return $models;
         }
 
     }
