@@ -1,0 +1,5 @@
+CREATE TABLE `Theme` (
+ `themeId` int(11) NOT NULL AUTO_INCREMENT,
+ `name` varchar(500) NOT NULL,
+ PRIMARY KEY (`themeId`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8
