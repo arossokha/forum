@@ -12,6 +12,14 @@ if(count($data)) {
         foreach($data as $theme) {
             echo "</tr>";
             foreach ($data[0]->getAttributeNames() as $attribute => $name) {
+                if($attribute == 'name') {
+                    echo '<td><a href="'.($this->createUrl('theme/view',
+                                    array(
+                                        'id' => $theme->getPrimaryKey()
+                                        )
+                                    )).'">'.$theme->{$attribute}.'<a></td>';
+                    continue;
+                }
                 echo '<td>'.$theme->{$attribute}.'</td>';
             }
             echo "</tr>";

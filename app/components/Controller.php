@@ -62,4 +62,9 @@
             die();
         }
 
+        public function createUrl($url,$params = array()) {
+            $r = App::inst()->getRouter();
+            return "/?".$r::ROUTER_PARAM_NAME.'='.$url.'&'.http_build_query($params);
+        }
+
     }

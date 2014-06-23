@@ -37,6 +37,10 @@
             die();
         }
 
+        public function getRouter() {
+            return $this->_router;
+        }
+
         public function run() {
             /**
              * @todo Routing 
@@ -55,7 +59,6 @@
             }
 
             $this->_controller = new $controllerName();
-
 
             $this->_controller->run($action);
         }

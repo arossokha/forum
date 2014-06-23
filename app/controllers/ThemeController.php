@@ -8,6 +8,7 @@
 
         public function actionView() {
             $theme = Theme::findOne(' themeId = :id',array(':id' => $_GET['id']));
+            $messages = Message::find(' themeId = :id',array(':id' => $_GET['id']));
 
             if(!$theme) {
                 /**
@@ -17,7 +18,8 @@
             }
 
             $this->render('theme',array(
-                    'theme' => $theme
+                    'theme' => $theme,
+                    'messages' => $messages,
                 ));
         }
     }
